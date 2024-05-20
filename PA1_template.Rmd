@@ -2,13 +2,23 @@
 title: "Coursera Assignment"
 author: "Sylva"
 date: "2024-05-20"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 # Preparations 
 ```{r}
 library(ggplot2)
 library(dplyr)
 library(lattice)
+```
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(# tidy.opts=list(width.cutoff=80),tidy=TRUE,
+        dev = c("png"), 
+        dpi = 300, 
+        fig.show = "hold",
+        fig.align = "center")
 ```
 
 # Reading in the activity data
@@ -18,7 +28,7 @@ activity$date <- as.Date(activity$date, format = "%Y-%m-%d")
 ```
 # What is the mean number of steps taken each day?
 ## Histogram of steps taken per day 
-```{r}
+```{r histogram of steps per day}
 daily_steps <- aggregate(steps ~ date, data = activity, sum)
 ggplot(daily_steps, aes(x = steps)) +
   geom_histogram(binwidth = 50, fill = 'blue', color = 'black', alpha = 0.7) +
@@ -34,10 +44,11 @@ ggplot(daily_steps, aes(x = steps)) +
 mean(daily_steps$steps)
 median(daily_steps$steps)
 ```
+
 # What is the average daily activity pattern?
 ## Time series plot of 5 minute intervals 
 
-```{r}
+```{r time series plot of 5 minute intervals}
 # Remove rows with NA in 'steps'
 activity_no_na <- activity[!is.na(activity$steps), ]
 
@@ -92,6 +103,7 @@ ggplot(daily_steps, aes(x = steps)) +
 mean(daily_steps$steps)
 median(daily_steps$steps)
 ```
+
 # Calculation weekdays or weekends
 ```{r}
 # Create the dayofweek variable
@@ -102,7 +114,7 @@ activity_imp$dayofweek <- factor(activity_imp$dayofweek, levels = c("Weekday", "
 ```
 
 # Make a time series plot for weekdays and weekends
-```{r}
+```{r time series of weekdays and weekends}
 # Calculate the average steps for each interval and day type
 interval_avg <- aggregate(steps ~ interval + dayofweek, data = activity_imp, FUN = mean)
 
