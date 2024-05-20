@@ -3,9 +3,21 @@ title: "Coursera Assignment"
 author: "Sylva"
 date: "2024-05-20"
 output:
-  html_document: default
-  pdf_document: default
+  html_document:
+    number_sections: true
+    keep_tex: yes
+    toc: true
+    toc_depth: 4
+  pdf_document:
+    number_sections: true
+    keep_tex: yes
+    toc: true
+    toc_depth: 4
+  word_document: default
+editor_options: 
+  chunk_output_type: console
 ---
+
 # Preparations 
 ```{r}
 library(ggplot2)
@@ -19,6 +31,8 @@ knitr::opts_chunk$set(# tidy.opts=list(width.cutoff=80),tidy=TRUE,
         dpi = 300, 
         fig.show = "hold",
         fig.align = "center")
+knitr::opts_knit$set(root.dir = "~/1. Coursera/5. Reproducible Research")
+
 ```
 
 # Reading in the activity data
@@ -26,9 +40,16 @@ knitr::opts_chunk$set(# tidy.opts=list(width.cutoff=80),tidy=TRUE,
 activity <- read.csv("activity.csv")
 activity$date <- as.Date(activity$date, format = "%Y-%m-%d")
 ```
+
 # What is the mean number of steps taken each day?
 ## Histogram of steps taken per day 
 ```{r histogram of steps per day}
+png(
+    "histogram of steps per day.png",
+    width = 10,
+    height = 10,
+    units = "in",
+    res = 600)
 daily_steps <- aggregate(steps ~ date, data = activity, sum)
 ggplot(daily_steps, aes(x = steps)) +
   geom_histogram(binwidth = 50, fill = 'blue', color = 'black', alpha = 0.7) +
@@ -37,6 +58,7 @@ ggplot(daily_steps, aes(x = steps)) +
        y = 'Frequency') +
   theme_light() +
   scale_x_continuous(breaks = seq(0, max(daily_steps$steps) + 50, by = 2000))
+dev.off()
 ```
 
 ## Calculate the mean and median number of steps taken per day
@@ -49,6 +71,12 @@ median(daily_steps$steps)
 ## Time series plot of 5 minute intervals 
 
 ```{r time series plot of 5 minute intervals}
+png(
+    "time series plot of 5 minute intervals.png",
+    width = 10,
+    height = 10,
+    units = "in",
+    res = 600)
 # Remove rows with NA in 'steps'
 activity_no_na <- activity[!is.na(activity$steps), ]
 
@@ -59,6 +87,7 @@ plot(interval_avg$interval, interval_avg$steps, type = "l", col = "blue", pch = 
      xlab = "Interval (minutes)", ylab = "Average Number of Steps", 
      main = "Average Number of Steps per 5-Minute Interval")
 grid()
+dev.off()
 ```
 # Sum of NA in total 
 ```{r}
@@ -88,8 +117,17 @@ activity_imp$steps <- mapply(impute_steps, activity_imp$steps, activity_imp$inte
 
 # Verify the imputation
 head(activity_imp, 20)
+```
 
-# Histogram of total steps taken per day
+
+```{r Histogram of total steps taken per day after imputation}
+# Histogram of total steps taken per day after imputation
+png(
+    "Histogram of total steps taken per day after imputation.png",
+    width = 10,
+    height = 10,
+    units = "in",
+    res = 600)
 
 daily_steps <- aggregate(steps ~ date, data = activity_imp, sum)
 ggplot(daily_steps, aes(x = steps)) +
@@ -99,7 +137,11 @@ ggplot(daily_steps, aes(x = steps)) +
        y = 'Frequency') +
   theme_light() +
   scale_x_continuous(breaks = seq(0, max(daily_steps$steps) + 50, by = 2000))
+dev.off()
+```
 
+# Mean and median of imputed data frame
+```{r}
 mean(daily_steps$steps)
 median(daily_steps$steps)
 ```
@@ -115,6 +157,12 @@ activity_imp$dayofweek <- factor(activity_imp$dayofweek, levels = c("Weekday", "
 
 # Make a time series plot for weekdays and weekends
 ```{r time series of weekdays and weekends}
+png(
+    "time series of weekdays and weekends.png",
+    width = 10,
+    height = 10,
+    units = "in",
+    res = 600)
 # Calculate the average steps for each interval and day type
 interval_avg <- aggregate(steps ~ interval + dayofweek, data = activity_imp, FUN = mean)
 
